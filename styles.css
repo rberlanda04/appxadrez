@@ -9,15 +9,15 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f5f5f5;
+    background: #ffffff;
     min-height: 100vh;
-    color: #333;
+    color: #000000;
     transition: all 0.3s ease;
 }
 
 body.dark-mode {
-    background: #1a1a1a;
-    color: #e0e0e0;
+    background: #000000;
+    color: #ffffff;
 }
 
 .container {
@@ -33,23 +33,23 @@ header {
 }
 
 header h1 {
-    color: #333;
+    color: #000000;
     font-size: 2.5rem;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     margin-bottom: 10px;
 }
 
 body.dark-mode header h1 {
-    color: #e0e0e0;
+    color: #ffffff;
 }
 
 header h1 i {
     margin-right: 15px;
-    color: #666;
+    color: #000000;
 }
 
 body.dark-mode header h1 i {
-    color: #ccc;
+    color: #ffffff;
 }
 
 /* Navegacao por abas */
@@ -58,11 +58,12 @@ body.dark-mode header h1 i {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
-    background: white;
+    background: #ffffff;
     border-radius: 15px;
     padding: 15px 20px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     position: relative;
+    border: 1px solid #000000;
 }
 
 .tabs .tab-buttons {
@@ -73,17 +74,18 @@ body.dark-mode header h1 i {
 }
 
 body.dark-mode .tabs {
-    background: #2a2a2a;
+    background: #000000;
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    border: 1px solid #ffffff;
 }
 
 
 
 .tab-btn {
     background: transparent;
-    border: none;
+    border: 1px solid #000000;
     padding: 12px 24px;
-    color: #666;
+    color: #000000;
     font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
@@ -93,34 +95,37 @@ body.dark-mode .tabs {
 }
 
 body.dark-mode .tab-btn {
-    color: #ccc;
+    color: #ffffff;
+    border: 1px solid #ffffff;
 }
 
 .tab-btn:hover {
-    background: rgba(0,0,0,0.05);
+    background: #000000;
+    color: #ffffff;
     transform: translateY(-2px);
 }
 
 body.dark-mode .tab-btn:hover {
-    background: rgba(255,255,255,0.1);
+    background: #ffffff;
+    color: #000000;
 }
 
 .tab-btn.active {
-    background: #333;
-    color: white;
+    background: #000000;
+    color: #ffffff;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 body.dark-mode .tab-btn.active {
-    background: #e0e0e0;
-    color: #333;
+    background: #ffffff;
+    color: #000000;
 }
 
 /* Botao de alternancia de tema */
 .theme-toggle {
-    background: #333;
-    color: white;
-    border: none;
+    background: #000000;
+    color: #ffffff;
+    border: 1px solid #000000;
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -135,33 +140,38 @@ body.dark-mode .tab-btn.active {
 }
 
 .theme-toggle:hover {
-    background: #555;
+    background: #ffffff;
+    color: #000000;
     transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 body.dark-mode .theme-toggle {
-    background: #e0e0e0;
-    color: #333;
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #ffffff;
 }
 
 body.dark-mode .theme-toggle:hover {
-    background: #ccc;
+    background: #000000;
+    color: #ffffff;
 }
 
 /* Conteudo das abas */
 .tab-content {
     display: none;
-    background: white;
+    background: #ffffff;
     border-radius: 20px;
     padding: 30px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     animation: fadeIn 0.5s ease;
+    border: 1px solid #000000;
 }
 
 body.dark-mode .tab-content {
-    background: #2a2a2a;
+    background: #000000;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 1px solid #ffffff;
 }
 
 .tab-content.active {
@@ -180,12 +190,20 @@ body.dark-mode .tab-content {
     align-items: center;
     margin-bottom: 30px;
     padding-bottom: 15px;
-    border-bottom: 2px solid #f0f0f0;
+    border-bottom: 2px solid #000000;
+}
+
+body.dark-mode .section-header {
+    border-bottom: 2px solid #ffffff;
 }
 
 .section-header h2 {
-    color: #333;
+    color: #000000;
     font-size: 1.8rem;
+}
+
+body.dark-mode .section-header h2 {
+    color: #ffffff;
 }
 
 /* Botoes */
@@ -209,48 +227,91 @@ body.dark-mode .tab-content {
 }
 
 .btn-primary {
-    background: #333;
-    color: white;
+    background: #000000;
+    color: #ffffff;
+    border: 1px solid #000000;
 }
 
 .btn-primary:hover {
-    background: #555;
+    background: #ffffff;
+    color: #000000;
 }
 
 body.dark-mode .btn-primary {
-    background: #e0e0e0;
-    color: #333;
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #ffffff;
 }
 
 body.dark-mode .btn-primary:hover {
-    background: #ccc;
+    background: #000000;
+    color: #ffffff;
 }
 
 .btn-success {
-    background: #28a745;
-    color: white;
+    background: #000000;
+    color: #ffffff;
+    border: 1px solid #000000;
 }
 
 .btn-success:hover {
-    background: #218838;
+    background: #ffffff;
+    color: #000000;
+}
+
+body.dark-mode .btn-success {
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #ffffff;
+}
+
+body.dark-mode .btn-success:hover {
+    background: #000000;
+    color: #ffffff;
 }
 
 .btn-danger {
-    background: #dc3545;
-    color: white;
+    background: #000000;
+    color: #ffffff;
+    border: 1px solid #000000;
 }
 
 .btn-danger:hover {
-    background: #c82333;
+    background: #ffffff;
+    color: #000000;
+}
+
+body.dark-mode .btn-danger {
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #ffffff;
+}
+
+body.dark-mode .btn-danger:hover {
+    background: #000000;
+    color: #ffffff;
 }
 
 .btn-secondary {
-    background: #6c757d;
-    color: white;
+    background: #000000;
+    color: #ffffff;
+    border: 1px solid #000000;
 }
 
 .btn-secondary:hover {
-    background: #5a6268;
+    background: #ffffff;
+    color: #000000;
+}
+
+body.dark-mode .btn-secondary {
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #ffffff;
+}
+
+body.dark-mode .btn-secondary:hover {
+    background: #000000;
+    color: #ffffff;
 }
 
 .btn-large {
@@ -262,15 +323,17 @@ body.dark-mode .btn-primary:hover {
 
 /* Formularios */
 .player-form, .match-form {
-    background: #f8f9fa;
+    background: #ffffff;
     padding: 25px;
     border-radius: 15px;
     margin-bottom: 30px;
+    border: 1px solid #000000;
 }
 
 body.dark-mode .player-form,
 body.dark-mode .match-form {
-    background: #333;
+    background: #000000;
+    border: 1px solid #ffffff;
 }
 
 .form-group {
@@ -281,7 +344,11 @@ body.dark-mode .match-form {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
-    color: #333;
+    color: #000000;
+}
+
+body.dark-mode .form-group label {
+    color: #ffffff;
 }
 
 .form-group input,
@@ -289,10 +356,20 @@ body.dark-mode .match-form {
 .form-group textarea {
     width: 100%;
     padding: 12px;
-    border: 2px solid #e9ecef;
+    border: 2px solid #000000;
     border-radius: 8px;
     font-size: 1rem;
     transition: border-color 0.3s ease;
+    background: #ffffff;
+    color: #000000;
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group select,
+body.dark-mode .form-group textarea {
+    border: 2px solid #ffffff;
+    background: #000000;
+    color: #ffffff;
 }
 
 .form-group input:focus,
@@ -333,9 +410,17 @@ body.dark-mode .form-group textarea:focus {
 .search-box input {
     width: 100%;
     padding: 12px 45px 12px 15px;
-    border: 2px solid #e9ecef;
+    border: 2px solid #000000;
     border-radius: 25px;
     font-size: 1rem;
+    background: #ffffff;
+    color: #000000;
+}
+
+body.dark-mode .search-box input {
+    border: 2px solid #ffffff;
+    background: #000000;
+    color: #ffffff;
 }
 
 .search-box i {
@@ -343,13 +428,17 @@ body.dark-mode .form-group textarea:focus {
     right: 15px;
     top: 50%;
     transform: translateY(-50%);
-    color: #6c757d;
+    color: #000000;
+}
+
+body.dark-mode .search-box i {
+    color: #ffffff;
 }
 
 /* Lista de jogadores */
 .player-card {
-    background: white;
-    border: 2px solid #f0f0f0;
+    background: #ffffff;
+    border: 2px solid #000000;
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 15px;
@@ -360,29 +449,37 @@ body.dark-mode .form-group textarea:focus {
 }
 
 .player-card:hover {
-    border-color: #333;
+    border-color: #000000;
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 body.dark-mode .player-card {
-    background: #333;
-    border-color: #555;
+    background: #000000;
+    border-color: #ffffff;
 }
 
 body.dark-mode .player-card:hover {
-    border-color: #e0e0e0;
+    border-color: #ffffff;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
 .player-info h3 {
-    color: #333;
+    color: #000000;
     margin-bottom: 5px;
 }
 
+body.dark-mode .player-info h3 {
+    color: #ffffff;
+}
+
 .player-info p {
-    color: #6c757d;
+    color: #000000;
     font-size: 0.9rem;
+}
+
+body.dark-mode .player-info p {
+    color: #ffffff;
 }
 
 .player-stats {
@@ -398,17 +495,21 @@ body.dark-mode .player-card:hover {
 .stat-value {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #333;
+    color: #000000;
 }
 
 body.dark-mode .stat-value {
-    color: #e0e0e0;
+    color: #ffffff;
 }
 
 .stat-label {
     font-size: 0.8rem;
-    color: #6c757d;
+    color: #000000;
     text-transform: uppercase;
+}
+
+body.dark-mode .stat-label {
+    color: #ffffff;
 }
 
 .player-actions {
@@ -429,11 +530,19 @@ body.dark-mode .stat-value {
 }
 
 .info-item {
-    background: #e9ecef;
+    background: #ffffff;
+    border: 1px solid #000000;
     padding: 8px 15px;
     border-radius: 20px;
     font-size: 0.9rem;
     font-weight: 500;
+    color: #000000;
+}
+
+body.dark-mode .info-item {
+    background: #000000;
+    border: 1px solid #ffffff;
+    color: #ffffff;
 }
 
 .ranking-table {
@@ -446,39 +555,65 @@ body.dark-mode .stat-value {
 .ranking-table td {
     padding: 15px;
     text-align: left;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid #000000;
+    color: #000000;
+}
+
+body.dark-mode .ranking-table th,
+body.dark-mode .ranking-table td {
+    border-bottom: 1px solid #ffffff;
+    color: #ffffff;
 }
 
 .ranking-table th {
-    background: #f8f9fa;
+    background: #ffffff;
     font-weight: 600;
-    color: #333;
+    color: #000000;
+    border: 1px solid #000000;
+}
+
+body.dark-mode .ranking-table th {
+    background: #000000;
+    color: #ffffff;
+    border: 1px solid #ffffff;
 }
 
 .ranking-table tr:hover {
-    background: #f8f9fa;
+    background: #ffffff;
+}
+
+body.dark-mode .ranking-table tr:hover {
+    background: #000000;
 }
 
 .position {
     font-weight: bold;
     font-size: 1.2rem;
-    color: #333;
+    color: #000000;
 }
 
 body.dark-mode .position {
-    color: #e0e0e0;
+    color: #ffffff;
 }
 
 .position.first {
-    color: #ffd700;
+    color: #000000;
 }
 
 .position.second {
-    color: #c0c0c0;
+    color: #000000;
+}
+
+body.dark-mode .position.second {
+    color: #ffffff;
 }
 
 .position.third {
-    color: #cd7f32;
+    color: #000000;
+}
+
+body.dark-mode .position.third {
+    color: #ffffff;
 }
 
 /* Selecao de jogadores na partida */
@@ -491,18 +626,20 @@ body.dark-mode .position {
 }
 
 .vs-divider {
-    background: #333;
-    color: white;
+    background: #000000;
+    color: #ffffff;
     padding: 15px 20px;
     border-radius: 50%;
     font-weight: bold;
     text-align: center;
     align-self: center;
+    border: 1px solid #000000;
 }
 
 body.dark-mode .vs-divider {
-    background: #e0e0e0;
-    color: #333;
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #ffffff;
 }
 
 /* Selecao de resultado */
@@ -512,7 +649,11 @@ body.dark-mode .vs-divider {
 
 .result-selection h3 {
     margin-bottom: 15px;
-    color: #333;
+    color: #000000;
+}
+
+body.dark-mode .result-selection h3 {
+    color: #ffffff;
 }
 
 .result-options {
@@ -525,26 +666,28 @@ body.dark-mode .vs-divider {
     display: flex;
     align-items: center;
     padding: 15px;
-    border: 2px solid #e9ecef;
+    border: 2px solid #000000;
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
+    background: #ffffff;
+    color: #000000;
 }
 
 .result-option:hover {
-    border-color: #333;
-    background: #f8f9fa;
+    border-color: #000000;
+    background: #ffffff;
 }
 
 body.dark-mode .result-option {
-    background: #333;
-    border-color: #555;
-    color: #e0e0e0;
+    background: #000000;
+    border-color: #ffffff;
+    color: #ffffff;
 }
 
 body.dark-mode .result-option:hover {
-    border-color: #e0e0e0;
-    background: #444;
+    border-color: #ffffff;
+    background: #000000;
 }
 
 .result-option input[type="radio"] {
@@ -553,12 +696,12 @@ body.dark-mode .result-option:hover {
 }
 
 .result-option input[type="radio"]:checked + .result-text {
-    color: #333;
+    color: #000000;
     font-weight: bold;
 }
 
 body.dark-mode .result-option input[type="radio"]:checked + .result-text {
-    color: #e0e0e0;
+    color: #ffffff;
 }
 
 /* Partidas recentes */
@@ -567,16 +710,18 @@ body.dark-mode .result-option input[type="radio"]:checked + .result-text {
 }
 
 .match-card {
-    background: #f8f9fa;
+    background: #ffffff;
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 15px;
-    border-left: 4px solid #333;
+    border: 1px solid #000000;
+    border-left: 4px solid #000000;
 }
 
 body.dark-mode .match-card {
-    background: #333;
-    border-left-color: #e0e0e0;
+    background: #000000;
+    border: 1px solid #ffffff;
+    border-left: 4px solid #ffffff;
 }
 
 .match-header {
@@ -588,21 +733,29 @@ body.dark-mode .match-card {
 
 .match-players {
     font-weight: bold;
-    color: #333;
+    color: #000000;
+}
+
+body.dark-mode .match-players {
+    color: #ffffff;
 }
 
 .match-date {
-    color: #6c757d;
+    color: #000000;
     font-size: 0.9rem;
 }
 
+body.dark-mode .match-date {
+    color: #ffffff;
+}
+
 .match-result {
-    color: #333;
+    color: #000000;
     font-weight: 500;
 }
 
 body.dark-mode .match-result {
-    color: #e0e0e0;
+    color: #ffffff;
 }
 
 /* Modal */
@@ -619,7 +772,8 @@ body.dark-mode .match-result {
 }
 
 .modal-content {
-    background-color: white;
+    background-color: #ffffff;
+    border: 1px solid #000000;
     margin: 15% auto;
     padding: 30px;
     border-radius: 15px;
@@ -631,12 +785,25 @@ body.dark-mode .match-result {
 
 .modal-content h3 {
     margin-bottom: 15px;
-    color: #333;
+    color: #000000;
+}
+
+body.dark-mode .modal-content {
+    background-color: #000000;
+    border: 1px solid #ffffff;
+}
+
+body.dark-mode .modal-content h3 {
+    color: #ffffff;
 }
 
 .modal-content p {
     margin-bottom: 25px;
-    color: #6c757d;
+    color: #000000;
+}
+
+body.dark-mode .modal-content p {
+    color: #ffffff;
 }
 
 .modal-actions {
