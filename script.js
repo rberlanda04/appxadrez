@@ -1,13 +1,18 @@
 // Sistema de Controle de Pontuação de Xadrez
 class ChessScoreManager {
     constructor() {
-        this.players = JSON.parse(localStorage.getItem('chessPlayers')) || [];
-        this.matches = JSON.parse(localStorage.getItem('chessMatches')) || [];
+        this.players = [];
+        this.matches = [];
         this.currentEditingPlayer = null;
         this.darkMode = localStorage.getItem('darkMode') === 'true';
         this.viewMode = localStorage.getItem('viewMode') || 'grid';
         this.sortBy = localStorage.getItem('sortBy') || 'name';
         this.init();
+    }
+
+    loadData() {
+        this.players = JSON.parse(localStorage.getItem('chessPlayers')) || [];
+        this.matches = JSON.parse(localStorage.getItem('chessMatches')) || [];
     }
 
     init() {
