@@ -1,0 +1,20 @@
+{
+  "name": "chess-score-manager",
+  "version": "1.0.0",
+  "description": "Sistema de controle de pontuação para xadrez",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve -s .",
+    "build": "echo 'No build step required for static site'",
+    "dev": "serve -s . -p 3000"
+  },
+  "keywords": ["chess", "score", "manager", "xadrez"],
+  "author": "Rogerio Henrique Berlanda",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

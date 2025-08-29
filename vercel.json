@@ -1,9 +1,18 @@
 {
   "version": 2,
   "name": "chess-score-manager",
+  "public": true,
   "builds": [
     {
-      "src": "**/*",
+      "src": "index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "styles.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "script.js",
       "use": "@vercel/static"
     }
   ],
@@ -11,14 +20,22 @@
     {
       "src": "/styles.css",
       "headers": {
-        "Content-Type": "text/css; charset=utf-8"
-      }
+        "Content-Type": "text/css; charset=utf-8",
+        "Access-Control-Allow-Origin": "*"
+      },
+      "dest": "/styles.css"
     },
     {
       "src": "/script.js",
       "headers": {
-        "Content-Type": "application/javascript; charset=utf-8"
-      }
+        "Content-Type": "application/javascript; charset=utf-8",
+        "Access-Control-Allow-Origin": "*"
+      },
+      "dest": "/script.js"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
     },
     {
       "src": "/(.*)",
@@ -34,8 +51,12 @@
           "value": "text/css; charset=utf-8"
         },
         {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
           "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
+          "value": "public, max-age=0, must-revalidate"
         }
       ]
     },
@@ -47,17 +68,8 @@
           "value": "application/javascript; charset=utf-8"
         },
         {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/index.html",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/html; charset=utf-8"
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
         },
         {
           "key": "Cache-Control",
@@ -66,11 +78,15 @@
       ]
     },
     {
-      "source": "/(.*)",
+      "source": "/**/*.html",
       "headers": [
         {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
+          "key": "Content-Type",
+          "value": "text/html; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
         }
       ]
     }
