@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Pontuação - Xadrez</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-chess"></i> Controle de Pontuação - Xadrez</h1>
+        </header>
+
+        <nav class="tabs">
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="jogadores">Jogadores</button>
+                <button class="tab-btn" data-tab="ranking">Ranking</button>
+                <button class="tab-btn" data-tab="partidas">Registrar Partida</button>
+            </div>
+            <button class="theme-toggle" id="themeToggle" title="Alternar tema">
+                <i class="fas fa-moon"></i>
+            </button>
+        </nav>
+
+        <!-- Seção Jogadores -->
+        <section id="jogadores" class="tab-content active">
+            <div class="section-header">
+                <h2>Gerenciar Jogadores</h2>
+                <button class="btn btn-primary" id="addPlayerBtn">
+                    <i class="fas fa-plus"></i> Adicionar Jogador
+                </button>
+            </div>
+
+            <div class="player-form" id="playerForm" style="display: none;">
+                <h3 id="formTitle">Adicionar Novo Jogador</h3>
+                <form id="playerFormElement">
+                    <div class="form-group">
+                        <label for="playerName">Nome do Jogador:</label>
+                        <input type="text" id="playerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="playerEmail">Email (opcional):</label>
+                        <input type="email" id="playerEmail">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Salvar
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancelBtn">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="players-list">
+                <div class="search-box">
+                    <input type="text" id="searchPlayer" placeholder="Buscar jogador...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div id="playersContainer">
+                    <!-- Jogadores serão inseridos aqui dinamicamente -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção Ranking -->
+        <section id="ranking" class="tab-content">
+            <div class="section-header">
+                <h2>Ranking de Jogadores</h2>
+                <div class="ranking-info">
+                    <span class="info-item">Vitória: 3 pts</span>
+                    <span class="info-item">Empate: 1 pt</span>
+                    <span class="info-item">Derrota: 0 pts</span>
+                </div>
+            </div>
+            <div id="rankingContainer">
+                <!-- Ranking será inserido aqui dinamicamente -->
+            </div>
+        </section>
+
+        <!-- Seção Registrar Partida -->
+        <section id="partidas" class="tab-content">
+            <div class="section-header">
+                <h2>Registrar Nova Partida</h2>
+            </div>
+            <div class="match-form">
+                <form id="matchForm">
+                    <div class="players-selection">
+                        <div class="form-group">
+                            <label for="player1">Jogador 1:</label>
+                            <select id="player1" required>
+                                <option value="">Selecione um jogador</option>
+                            </select>
+                        </div>
+                        <div class="vs-divider">VS</div>
+                        <div class="form-group">
+                            <label for="player2">Jogador 2:</label>
+                            <select id="player2" required>
+                                <option value="">Selecione um jogador</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="result-selection">
+                        <h3>Resultado da Partida:</h3>
+                        <div class="result-options">
+                            <label class="result-option">
+                                <input type="radio" name="result" value="player1" required>
+                                <span class="result-text">Vitória Jogador 1</span>
+                            </label>
+                            <label class="result-option">
+                                <input type="radio" name="result" value="draw" required>
+                                <span class="result-text">Empate</span>
+                            </label>
+                            <label class="result-option">
+                                <input type="radio" name="result" value="player2" required>
+                                <span class="result-text">Vitória Jogador 2</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="matchDate">Data da Partida:</label>
+                        <input type="date" id="matchDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="matchNotes">Observações (opcional):</label>
+                        <textarea id="matchNotes" rows="3" placeholder="Adicione observações sobre a partida..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-chess-board"></i> Registrar Partida
+                    </button>
+                </form>
+            </div>
+
+            <div class="recent-matches">
+                <h3>Partidas Recentes</h3>
+                <div id="recentMatchesContainer">
+                    <!-- Partidas recentes serão inseridas aqui -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h3>Confirmar Ação</h3>
+            <p id="confirmMessage"></p>
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="confirmYes">Sim</button>
+                <button class="btn btn-secondary" id="confirmNo">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
