@@ -139,10 +139,65 @@
                         </div>
                     </div>
 
-                    <!-- Search Box -->
-                    <div class="relative mb-6">
-                        <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"></i>
-                        <input type="text" id="searchPlayer" placeholder="Buscar jogador..." class="flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                    <!-- Search and Filters -->
+                    <div class="mb-6 space-y-4">
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <!-- Search Box -->
+                            <div class="relative flex-1">
+                                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"></i>
+                                <input type="text" id="searchPlayer" placeholder="Buscar jogador..." class="flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                            </div>
+                            
+                            <!-- Sort Options -->
+                            <select id="sortPlayers" class="flex h-10 w-full sm:w-48 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                                <option value="name">Ordenar por Nome</option>
+                                <option value="points">Ordenar por Pontos</option>
+                                <option value="wins">Ordenar por Vitórias</option>
+                                <option value="matches">Ordenar por Partidas</option>
+                            </select>
+                            
+                            <!-- View Toggle -->
+                            <div class="flex rounded-md border border-input bg-background p-1">
+                                <button id="gridView" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-background text-foreground shadow-sm" title="Visualização em Grade">
+                                    <i data-lucide="grid-3x3" class="w-4 h-4"></i>
+                                </button>
+                                <button id="listView" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-muted-foreground" title="Visualização em Lista">
+                                    <i data-lucide="list" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Players Statistics -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-4">
+                                <div class="flex items-center space-x-2">
+                                    <i data-lucide="users" class="w-4 h-4 text-muted-foreground"></i>
+                                    <span class="text-sm font-medium text-muted-foreground">Total</span>
+                                </div>
+                                <div class="text-2xl font-bold" id="totalPlayers">0</div>
+                            </div>
+                            <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-4">
+                                <div class="flex items-center space-x-2">
+                                    <i data-lucide="zap" class="w-4 h-4 text-muted-foreground"></i>
+                                    <span class="text-sm font-medium text-muted-foreground">Ativos</span>
+                                </div>
+                                <div class="text-2xl font-bold" id="activePlayers">0</div>
+                            </div>
+                            <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-4">
+                                <div class="flex items-center space-x-2">
+                                    <i data-lucide="trophy" class="w-4 h-4 text-muted-foreground"></i>
+                                    <span class="text-sm font-medium text-muted-foreground">Líder</span>
+                                </div>
+                                <div class="text-sm font-bold truncate" id="topPlayer">-</div>
+                            </div>
+                            <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-4">
+                                <div class="flex items-center space-x-2">
+                                    <i data-lucide="target" class="w-4 h-4 text-muted-foreground"></i>
+                                    <span class="text-sm font-medium text-muted-foreground">Média</span>
+                                </div>
+                                <div class="text-2xl font-bold" id="averagePoints">0</div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Players Container -->

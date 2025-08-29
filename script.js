@@ -5,6 +5,8 @@ class ChessScoreManager {
         this.matches = JSON.parse(localStorage.getItem('chessMatches')) || [];
         this.currentEditingPlayer = null;
         this.darkMode = localStorage.getItem('darkMode') === 'true';
+        this.viewMode = localStorage.getItem('viewMode') || 'grid';
+        this.sortBy = localStorage.getItem('sortBy') || 'name';
         this.init();
     }
 
@@ -29,8 +31,11 @@ class ChessScoreManager {
         document.getElementById('cancelBtn').addEventListener('click', () => this.hidePlayerForm());
         document.getElementById('playerFormElement').addEventListener('submit', (e) => this.handlePlayerSubmit(e));
 
-        // Busca de jogadores
+        // Busca e filtros de jogadores
         document.getElementById('searchPlayer').addEventListener('input', (e) => this.searchPlayers(e.target.value));
+        document.getElementById('sortPlayers').addEventListener('change', (e) => this.sortPlayers(e.target.value));
+        document.getElementById('gridView').addEventListener('click', () => this.setViewMode('grid'));
+        document.getElementById('listView').addEventListener('click', () => this.setViewMode('list'));
 
         // Formulário de partida
         document.getElementById('matchForm').addEventListener('submit', (e) => this.handleMatchSubmit(e));
@@ -183,55 +188,198 @@ class ChessScoreManager {
         this.renderPlayers(filteredPlayers);
     }
 
+    sortPlayers(sortBy) {
+        this.sortBy = sortBy;
+        localStorage.setItem('sortBy', sortBy);
+        document.getElementById('sortPlayers').value = sortBy;
+        this.renderPlayers();
+    }
+
+    setViewMode(mode) {
+        this.viewMode = mode;
+        localStorage.setItem('viewMode', mode);
+        
+        // Update view toggle buttons
+        document.getElementById('gridView').classList.toggle('bg-background', mode === 'grid');
+        document.getElementById('gridView').classList.toggle('text-foreground', mode === 'grid');
+        document.getElementById('gridView').classList.toggle('shadow-sm', mode === 'grid');
+        document.getElementById('gridView').classList.toggle('text-muted-foreground', mode !== 'grid');
+        
+        document.getElementById('listView').classList.toggle('bg-background', mode === 'list');
+        document.getElementById('listView').classList.toggle('text-foreground', mode === 'list');
+        document.getElementById('listView').classList.toggle('shadow-sm', mode === 'list');
+        document.getElementById('listView').classList.toggle('text-muted-foreground', mode !== 'list');
+        
+        this.renderPlayers();
+    }
+
+    updatePlayerStatistics() {
+        const totalPlayers = this.players.length;
+        const activePlayers = this.players.filter(p => p.wins + p.draws + p.losses > 0).length;
+        const topPlayer = this.players.length > 0 ? 
+            [...this.players].sort((a, b) => b.points - a.points)[0] : null;
+        const averagePoints = totalPlayers > 0 ? 
+            Math.round(this.players.reduce((sum, p) => sum + p.points, 0) / totalPlayers) : 0;
+
+        document.getElementById('totalPlayers').textContent = totalPlayers;
+        document.getElementById('activePlayers').textContent = activePlayers;
+        document.getElementById('topPlayer').textContent = topPlayer ? topPlayer.name : '-';
+        document.getElementById('averagePoints').textContent = averagePoints;
+    }
+
     renderPlayers(playersToRender = null) {
         const container = document.getElementById('playersContainer');
-        const players = playersToRender || this.players;
+        let players = playersToRender || [...this.players];
+
+        // Sort players
+        players.sort((a, b) => {
+            switch (this.sortBy) {
+                case 'points':
+                    return b.points - a.points;
+                case 'wins':
+                    return b.wins - a.wins;
+                case 'matches':
+                    return (b.wins + b.draws + b.losses) - (a.wins + a.draws + a.losses);
+                case 'name':
+                default:
+                    return a.name.localeCompare(b.name);
+            }
+        });
+
+        // Update statistics
+        this.updatePlayerStatistics();
 
         if (players.length === 0) {
             container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-users"></i>
-                    <h3>Nenhum jogador encontrado</h3>
-                    <p>${playersToRender ? 'Tente uma busca diferente.' : 'Adicione o primeiro jogador para começar!'}</p>
+                <div class="col-span-full flex flex-col items-center justify-center py-12 text-center">
+                    <i data-lucide="users" class="w-12 h-12 text-muted-foreground mb-4"></i>
+                    <h3 class="text-lg font-semibold mb-2">Nenhum jogador encontrado</h3>
+                    <p class="text-muted-foreground">${playersToRender ? 'Tente uma busca diferente.' : 'Adicione o primeiro jogador para começar!'}</p>
                 </div>
             `;
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
             return;
         }
 
-        container.innerHTML = players.map(player => `
-            <div class="player-card">
-                <div class="player-info">
-                    <h3>${player.name}</h3>
-                    ${player.email ? `<p><i class="fas fa-envelope"></i> ${player.email}</p>` : ''}
-                </div>
-                <div class="player-stats">
-                    <div class="stat-item">
-                        <div class="stat-value">${player.points}</div>
-                        <div class="stat-label">Pontos</div>
+        // Set container classes based on view mode
+        if (this.viewMode === 'list') {
+            container.className = 'space-y-4';
+        } else {
+            container.className = 'grid gap-4 md:grid-cols-2 lg:grid-cols-3';
+        }
+
+        container.innerHTML = players.map(player => {
+            const totalMatches = player.wins + player.draws + player.losses;
+            const winRate = totalMatches > 0 ? Math.round((player.wins / totalMatches) * 100) : 0;
+            
+            if (this.viewMode === 'list') {
+                return `
+                    <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <span class="text-lg font-bold text-primary">${player.name.charAt(0).toUpperCase()}</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold">${player.name}</h3>
+                                    ${player.email ? `<p class="text-sm text-muted-foreground flex items-center"><i data-lucide="mail" class="w-3 h-3 mr-1"></i> ${player.email}</p>` : ''}
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-6">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold">${player.points}</div>
+                                    <div class="text-xs text-muted-foreground">Pontos</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-lg font-semibold text-green-600">${player.wins}</div>
+                                    <div class="text-xs text-muted-foreground">Vitórias</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-lg font-semibold text-yellow-600">${player.draws}</div>
+                                    <div class="text-xs text-muted-foreground">Empates</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-lg font-semibold text-red-600">${player.losses}</div>
+                                    <div class="text-xs text-muted-foreground">Derrotas</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-lg font-semibold">${winRate}%</div>
+                                    <div class="text-xs text-muted-foreground">Taxa</div>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8" onclick="chessManager.editPlayer('${player.id}')" title="Editar">
+                                        <i data-lucide="edit" class="w-4 h-4"></i>
+                                    </button>
+                                    <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-8 w-8" onclick="chessManager.deletePlayer('${player.id}')" title="Excluir">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${player.wins}</div>
-                        <div class="stat-label">Vitórias</div>
+                `;
+            } else {
+                return `
+                    <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                        <div class="p-6">
+                            <div class="flex items-center space-x-4 mb-4">
+                                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <span class="text-lg font-bold text-primary">${player.name.charAt(0).toUpperCase()}</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-semibold">${player.name}</h3>
+                                    ${player.email ? `<p class="text-sm text-muted-foreground flex items-center"><i data-lucide="mail" class="w-3 h-3 mr-1"></i> ${player.email}</p>` : ''}
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="text-center p-3 rounded-lg bg-primary/5">
+                                    <div class="text-2xl font-bold text-primary">${player.points}</div>
+                                    <div class="text-xs text-muted-foreground">Pontos</div>
+                                </div>
+                                <div class="text-center p-3 rounded-lg bg-muted/50">
+                                    <div class="text-lg font-semibold">${winRate}%</div>
+                                    <div class="text-xs text-muted-foreground">Taxa de Vitória</div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2 mb-4">
+                                <div class="text-center">
+                                    <div class="text-lg font-semibold text-green-600">${player.wins}</div>
+                                    <div class="text-xs text-muted-foreground">Vitórias</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-lg font-semibold text-yellow-600">${player.draws}</div>
+                                    <div class="text-xs text-muted-foreground">Empates</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-lg font-semibold text-red-600">${player.losses}</div>
+                                    <div class="text-xs text-muted-foreground">Derrotas</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-2">
+                                <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 flex-1" onclick="chessManager.editPlayer('${player.id}')">
+                                    <i data-lucide="edit" class="w-4 h-4 mr-2"></i>
+                                    Editar
+                                </button>
+                                <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-9 px-3 flex-1" onclick="chessManager.deletePlayer('${player.id}')">
+                                    <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i>
+                                    Excluir
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${player.draws}</div>
-                        <div class="stat-label">Empates</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${player.losses}</div>
-                        <div class="stat-label">Derrotas</div>
-                    </div>
-                </div>
-                <div class="player-actions">
-                    <button class="btn btn-primary btn-small" onclick="chessManager.editPlayer('${player.id}')">
-                        <i class="fas fa-edit"></i> Editar
-                    </button>
-                    <button class="btn btn-danger btn-small" onclick="chessManager.deletePlayer('${player.id}')">
-                        <i class="fas fa-trash"></i> Excluir
-                    </button>
-                </div>
-            </div>
-        `).join('');
+                `;
+            }
+        }).join('');
+        
+        // Reinitialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     }
 
     // Sistema de ranking
@@ -458,12 +606,20 @@ class ChessScoreManager {
 
     // Sistema de temas
     initTheme() {
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        
         if (this.darkMode) {
-            document.body.classList.add('dark-mode');
-            document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            html.classList.add('dark');
+            themeToggle.innerHTML = '<i data-lucide="sun" class="w-4 h-4"></i>';
         } else {
-            document.body.classList.remove('dark-mode');
-            document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+            html.classList.remove('dark');
+            themeToggle.innerHTML = '<i data-lucide="moon" class="w-4 h-4"></i>';
+        }
+        
+        // Reinitialize Lucide icons after changing the HTML
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
         }
     }
 
