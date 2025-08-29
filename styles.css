@@ -113,6 +113,40 @@ body.dark-mode .tab-btn.active {
     color: #333;
 }
 
+/* Botão de alternância de tema */
+.theme-toggle {
+    position: absolute;
+    right: 15px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.theme-toggle:hover {
+    background: #555;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+body.dark-mode .theme-toggle {
+    background: #e0e0e0;
+    color: #333;
+}
+
+body.dark-mode .theme-toggle:hover {
+    background: #ccc;
+}
+
 /* Conteúdo das abas */
 .tab-content {
     display: none;
@@ -613,6 +647,23 @@ body.dark-mode .match-result {
 @media (max-width: 768px) {
     .container {
         padding: 15px;
+    }
+    
+    .tabs {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px;
+    }
+    
+    .tab-buttons {
+        order: 2;
+    }
+    
+    .theme-toggle {
+        position: static;
+        order: 1;
+        align-self: flex-end;
+        margin-bottom: 10px;
     }
     
     header h1 {
