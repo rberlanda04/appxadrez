@@ -11,13 +11,17 @@ class ChessScoreManager {
     }
 
     init() {
+        this.loadData();
         this.setupEventListeners();
-        this.initTheme();
+        this.setupCsvEventListeners();
+        this.setupReportsEventListeners();
         this.renderPlayers();
         this.renderRanking();
         this.renderRecentMatches();
+        this.renderReports();
         this.updatePlayerSelects();
         this.setDefaultDate();
+        this.initTheme();
     }
 
     setupEventListeners() {
@@ -69,6 +73,8 @@ class ChessScoreManager {
         } else if (tabName === 'partidas') {
             this.updatePlayerSelects();
             this.renderRecentMatches();
+        } else if (tabName === 'relatorios') {
+            this.renderReports();
         }
     }
 
@@ -701,19 +707,463 @@ class ChessScoreManager {
         }, 3000);
     }
 
+    // Funcionalidades CSV/Excel
+    setupCsvEventListeners() {
+        const importBtn = document.getElementById('importCsvBtn');
+        const exportBtn = document.getElementById('exportCsvBtn');
+        const modal = document.getElementById('csvImportModal');
+        const cancelBtn = document.getElementById('csvCancelBtn');
+        const dropZone = document.getElementById('csvDropZone');
+        const fileInput = document.getElementById('csvFileInput');
+        const confirmBtn = document.getElementById('csvImportConfirmBtn');
+        const removeFileBtn = document.getElementById('csvRemoveFile');
+
+        // Event listeners
+        importBtn?.addEventListener('click', () => this.showCsvImportModal());
+        exportBtn?.addEventListener('click', () => this.exportToCsv());
+        cancelBtn?.addEventListener('click', () => this.hideCsvImportModal());
+        confirmBtn?.addEventListener('click', () => this.importFromCsv());
+        removeFileBtn?.addEventListener('click', () => this.removeCsvFile());
+
+        // Drag and drop
+        dropZone?.addEventListener('click', () => fileInput?.click());
+        dropZone?.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-primary');
+        });
+        dropZone?.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-primary');
+        });
+        dropZone?.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-primary');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                this.handleCsvFile(files[0]);
+            }
+        });
+
+        fileInput?.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                this.handleCsvFile(e.target.files[0]);
+            }
+        });
+    }
+
+    showCsvImportModal() {
+        const modal = document.getElementById('csvImportModal');
+        modal?.classList.remove('hidden');
+        this.resetCsvModal();
+    }
+
+    hideCsvImportModal() {
+        const modal = document.getElementById('csvImportModal');
+        modal?.classList.add('hidden');
+        this.resetCsvModal();
+    }
+
+    resetCsvModal() {
+        const fileInput = document.getElementById('csvFileInput');
+        const fileInfo = document.getElementById('csvFileInfo');
+        const preview = document.getElementById('csvPreview');
+        const confirmBtn = document.getElementById('csvImportConfirmBtn');
+        
+        if (fileInput) fileInput.value = '';
+        fileInfo?.classList.add('hidden');
+        preview?.classList.add('hidden');
+        confirmBtn?.setAttribute('disabled', 'true');
+        this.csvData = null;
+    }
+
+    handleCsvFile(file) {
+        const validTypes = ['text/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+        const validExtensions = ['.csv', '.xls', '.xlsx'];
+        const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+        
+        if (!validTypes.includes(file.type) && !validExtensions.includes(fileExtension)) {
+            alert('Formato de arquivo não suportado. Use CSV, XLS ou XLSX.');
+            return;
+        }
+
+        const fileName = document.getElementById('csvFileName');
+        const fileInfo = document.getElementById('csvFileInfo');
+        
+        if (fileName) fileName.textContent = file.name;
+        fileInfo?.classList.remove('hidden');
+        
+        this.parseCsvFile(file);
+    }
+
+    parseCsvFile(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                let csvText = e.target.result;
+                
+                // Parse CSV
+                const lines = csvText.split('\n').filter(line => line.trim());
+                if (lines.length < 2) {
+                    alert('Arquivo deve conter pelo menos um cabeçalho e uma linha de dados.');
+                    return;
+                }
+                
+                const headers = this.parseCsvLine(lines[0]);
+                const data = [];
+                
+                for (let i = 1; i < lines.length; i++) {
+                    const values = this.parseCsvLine(lines[i]);
+                    if (values.length === headers.length) {
+                        const row = {};
+                        headers.forEach((header, index) => {
+                            row[header.toLowerCase().trim()] = values[index].trim();
+                        });
+                        data.push(row);
+                    }
+                }
+                
+                this.csvData = { headers, data };
+                this.showCsvPreview();
+                
+            } catch (error) {
+                console.error('Erro ao processar arquivo:', error);
+                alert('Erro ao processar arquivo CSV.');
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    parseCsvLine(line) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            
+            if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                result.push(current);
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        
+        result.push(current);
+        return result;
+    }
+
+    showCsvPreview() {
+        if (!this.csvData) return;
+        
+        const preview = document.getElementById('csvPreview');
+        const header = document.getElementById('csvPreviewHeader');
+        const body = document.getElementById('csvPreviewBody');
+        const info = document.getElementById('csvPreviewInfo');
+        const confirmBtn = document.getElementById('csvImportConfirmBtn');
+        
+        // Show headers
+        if (header) {
+            header.innerHTML = this.csvData.headers.map(h => 
+                `<th class="px-3 py-2 text-left">${h}</th>`
+            ).join('');
+        }
+        
+        // Show first 5 rows
+        if (body) {
+            const previewRows = this.csvData.data.slice(0, 5);
+            body.innerHTML = previewRows.map(row => 
+                `<tr class="border-t">${this.csvData.headers.map(h => 
+                    `<td class="px-3 py-2">${row[h.toLowerCase().trim()] || ''}</td>`
+                ).join('')}</tr>`
+            ).join('');
+        }
+        
+        if (info) {
+            info.textContent = `${this.csvData.data.length} jogadores encontrados. Mostrando primeiros 5.`;
+        }
+        
+        preview?.classList.remove('hidden');
+        confirmBtn?.removeAttribute('disabled');
+    }
+
+    removeCsvFile() {
+        this.resetCsvModal();
+    }
+
+    importFromCsv() {
+        if (!this.csvData) return;
+        
+        let imported = 0;
+        let errors = [];
+        
+        this.csvData.data.forEach((row, index) => {
+            try {
+                const name = row.nome || row.name || row.jogador || '';
+                const email = row.email || row['e-mail'] || '';
+                
+                if (!name.trim()) {
+                    errors.push(`Linha ${index + 2}: Nome é obrigatório`);
+                    return;
+                }
+                
+                // Check if player already exists
+                const existingPlayer = this.players.find(p => 
+                    p.name.toLowerCase() === name.toLowerCase() || 
+                    (email && p.email.toLowerCase() === email.toLowerCase())
+                );
+                
+                if (existingPlayer) {
+                    errors.push(`Linha ${index + 2}: Jogador "${name}" já existe`);
+                    return;
+                }
+                
+                // Create new player
+                const player = {
+                    id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                    name: name.trim(),
+                    email: email.trim(),
+                    points: 0,
+                    wins: 0,
+                    losses: 0,
+                    draws: 0,
+                    matches: 0,
+                    createdAt: new Date().toISOString()
+                };
+                
+                this.players.push(player);
+                imported++;
+                
+            } catch (error) {
+                errors.push(`Linha ${index + 2}: Erro ao processar dados`);
+            }
+        });
+        
+        // Save and update UI
+        this.saveData();
+        this.renderPlayers();
+        this.renderRanking();
+        this.updatePlayerSelects();
+        this.updatePlayerStatistics();
+        
+        // Show results
+        let message = `${imported} jogadores importados com sucesso!`;
+        if (errors.length > 0) {
+            message += `\n\nErros encontrados:\n${errors.slice(0, 5).join('\n')}`;
+            if (errors.length > 5) {
+                message += `\n... e mais ${errors.length - 5} erros.`;
+            }
+        }
+        
+        alert(message);
+        this.hideCsvImportModal();
+    }
+
+    exportToCsv() {
+        if (this.players.length === 0) {
+            alert('Não há jogadores para exportar.');
+            return;
+        }
+        
+        // Prepare CSV data
+        const headers = ['Nome', 'Email', 'Pontos', 'Vitórias', 'Derrotas', 'Empates', 'Partidas', 'Taxa de Vitória', 'Data de Cadastro'];
+        const csvData = [headers];
+        
+        this.players.forEach(player => {
+            const winRate = player.matches > 0 ? ((player.wins / player.matches) * 100).toFixed(1) + '%' : '0%';
+            const createdDate = new Date(player.createdAt).toLocaleDateString('pt-BR');
+            
+            csvData.push([
+                player.name,
+                player.email,
+                player.points.toString(),
+                player.wins.toString(),
+                player.losses.toString(),
+                player.draws.toString(),
+                player.matches.toString(),
+                winRate,
+                createdDate
+            ]);
+        });
+        
+        // Convert to CSV string
+        const csvString = csvData.map(row => 
+            row.map(field => `"${field.toString().replace(/"/g, '""')}"`).join(',')
+        ).join('\n');
+        
+        // Download file
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `jogadores-xadrez-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        this.showNotification('Dados exportados para CSV com sucesso!');
+    }
+
     // Método para exportar dados (funcionalidade extra)
+    // Reports functionality
+    setupReportsEventListeners() {
+        const exportReportBtn = document.getElementById('exportReportBtn');
+        if (exportReportBtn) {
+            exportReportBtn.addEventListener('click', () => this.exportReport());
+        }
+    }
+    
+    generateReportStatistics() {
+        const totalPlayers = this.players.length;
+        const totalMatches = this.matches.length;
+        
+        // Find current leader
+        const sortedPlayers = [...this.players].sort((a, b) => {
+            if (b.points !== a.points) return b.points - a.points;
+            const aWinRate = a.matches > 0 ? (a.wins / a.matches) * 100 : 0;
+            const bWinRate = b.matches > 0 ? (b.wins / b.matches) * 100 : 0;
+            return bWinRate - aWinRate;
+        });
+        
+        const currentLeader = sortedPlayers.length > 0 ? sortedPlayers[0].name : '-';
+        
+        // Calculate average win rate
+        const playersWithMatches = this.players.filter(p => p.matches > 0);
+        const avgWinRate = playersWithMatches.length > 0 
+            ? playersWithMatches.reduce((sum, p) => sum + (p.wins / p.matches), 0) / playersWithMatches.length * 100
+            : 0;
+        
+        return {
+            totalPlayers,
+            totalMatches,
+            currentLeader,
+            avgWinRate: avgWinRate.toFixed(1)
+        };
+    }
+    
+    renderReports() {
+        const stats = this.generateReportStatistics();
+        
+        // Update statistics cards
+        document.getElementById('reportTotalPlayers').textContent = stats.totalPlayers;
+        document.getElementById('reportTotalMatches').textContent = stats.totalMatches;
+        document.getElementById('reportCurrentLeader').textContent = stats.currentLeader;
+        document.getElementById('reportAvgWinRate').textContent = `${stats.avgWinRate}%`;
+        
+        // Render detailed table
+        this.renderReportTable();
+    }
+    
+    renderReportTable() {
+        const tbody = document.getElementById('reportTableBody');
+        if (!tbody) return;
+        
+        // Sort players by ranking
+        const sortedPlayers = [...this.players].sort((a, b) => {
+            if (b.points !== a.points) return b.points - a.points;
+            const aWinRate = a.matches > 0 ? (a.wins / a.matches) * 100 : 0;
+            const bWinRate = b.matches > 0 ? (b.wins / b.matches) * 100 : 0;
+            return bWinRate - aWinRate;
+        });
+        
+        tbody.innerHTML = sortedPlayers.map((player, index) => {
+            const winRate = player.matches > 0 ? ((player.wins / player.matches) * 100).toFixed(1) : '0.0';
+            
+            // Find last match date
+            const playerMatches = this.matches.filter(m => 
+                m.player1Id === player.id || m.player2Id === player.id
+            );
+            const lastMatch = playerMatches.length > 0 
+                ? new Date(Math.max(...playerMatches.map(m => new Date(m.date)))).toLocaleDateString('pt-BR')
+                : 'Nunca jogou';
+            
+            // Position styling
+            let positionClass = '';
+            if (index === 0) positionClass = 'text-yellow-600 font-bold';
+            else if (index === 1) positionClass = 'text-gray-500 font-semibold';
+            else if (index === 2) positionClass = 'text-amber-600 font-semibold';
+            
+            return `
+                <tr class="border-b hover:bg-muted/50">
+                    <td class="px-4 py-3">
+                        <span class="${positionClass}">${index + 1}º</span>
+                    </td>
+                    <td class="px-4 py-3 font-medium">${player.name}</td>
+                    <td class="px-4 py-3 text-center font-semibold">${player.points}</td>
+                    <td class="px-4 py-3 text-center">${player.matches}</td>
+                    <td class="px-4 py-3 text-center text-green-600 font-medium">${player.wins}</td>
+                    <td class="px-4 py-3 text-center text-yellow-600 font-medium">${player.draws}</td>
+                    <td class="px-4 py-3 text-center text-red-600 font-medium">${player.losses}</td>
+                    <td class="px-4 py-3 text-center font-medium">${winRate}%</td>
+                    <td class="px-4 py-3 text-center text-sm text-muted-foreground">${lastMatch}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+    
+    exportReport() {
+        const stats = this.generateReportStatistics();
+        const sortedPlayers = [...this.players].sort((a, b) => {
+            if (b.points !== a.points) return b.points - a.points;
+            const aWinRate = a.matches > 0 ? (a.wins / a.matches) * 100 : 0;
+            const bWinRate = b.matches > 0 ? (b.wins / b.matches) * 100 : 0;
+            return bWinRate - aWinRate;
+        });
+        
+        // Create CSV content
+        let csvContent = 'Relatório do Torneio de Xadrez\n';
+        csvContent += `Data de Geração: ${new Date().toLocaleDateString('pt-BR')}\n`;
+        csvContent += `Total de Jogadores: ${stats.totalPlayers}\n`;
+        csvContent += `Total de Partidas: ${stats.totalMatches}\n`;
+        csvContent += `Líder Atual: ${stats.currentLeader}\n`;
+        csvContent += `Taxa Média de Vitória: ${stats.avgWinRate}%\n\n`;
+        
+        // Add detailed table
+        csvContent += 'Posição,Jogador,Pontos,Partidas,Vitórias,Empates,Derrotas,Taxa de Vitória,Última Partida\n';
+        
+        sortedPlayers.forEach((player, index) => {
+            const winRate = player.matches > 0 ? ((player.wins / player.matches) * 100).toFixed(1) : '0.0';
+            
+            // Find last match date
+            const playerMatches = this.matches.filter(m => 
+                m.player1Id === player.id || m.player2Id === player.id
+            );
+            const lastMatch = playerMatches.length > 0 
+                ? new Date(Math.max(...playerMatches.map(m => new Date(m.date)))).toLocaleDateString('pt-BR')
+                : 'Nunca jogou';
+            
+            csvContent += `${index + 1},"${player.name}",${player.points},${player.matches},${player.wins},${player.draws},${player.losses},${winRate}%,${lastMatch}\n`;
+        });
+        
+        // Create and download file
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `relatorio-torneio-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        this.showNotification('Relatório exportado com sucesso!');
+    }
+
     exportData() {
         const data = {
             players: this.players,
             matches: this.matches,
-            exportDate: new Date().toISOString()
+            exportDate: new Date().toISOString(),
+            version: '1.0'
         };
         
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `xadrez-backup-${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `chess-tournament-${new Date().toISOString().split('T')[0]}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
