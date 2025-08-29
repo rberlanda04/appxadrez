@@ -4,226 +4,350 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Pontuação - Xadrez</title>
-    <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Tailwind CSS for shadcn/ui compatibility -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons for modern icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
-        /* CSS inline como fallback */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            color: #333;
+        /* Tailwind CSS configuration for shadcn/ui compatibility */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 0 0% 3.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 0 0% 3.9%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 0 0% 3.9%;
+            --primary: 0 0% 9%;
+            --primary-foreground: 0 0% 98%;
+            --secondary: 0 0% 96.1%;
+            --secondary-foreground: 0 0% 9%;
+            --muted: 0 0% 96.1%;
+            --muted-foreground: 0 0% 45.1%;
+            --accent: 0 0% 96.1%;
+            --accent-foreground: 0 0% 9%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 0 0% 98%;
+            --border: 0 0% 89.8%;
+            --input: 0 0% 89.8%;
+            --ring: 0 0% 3.9%;
+            --radius: 0.5rem;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background: white;
-            min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px 0;
-            border-bottom: 3px solid #2c3e50;
-        }
-        header h1 {
-            color: #2c3e50;
-            font-size: 2.5rem;
-            margin: 0;
-        }
-        .tabs {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 30px;
-            background: #ecf0f1;
-            border-radius: 10px;
-            padding: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .tab-btn {
-            background: transparent;
-            border: none;
-            padding: 12px 24px;
-            margin: 0 5px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            color: #7f8c8d;
-            transition: all 0.3s ease;
-        }
-        .tab-btn.active {
-            background: #3498db;
-            color: white;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-        }
-        .tab-btn:hover {
-            background: #bdc3c7;
-            color: #2c3e50;
-        }
-        .tab-btn.active:hover {
-            background: #2980b9;
-            color: white;
+        
+        .dark {
+            --background: 0 0% 3.9%;
+            --foreground: 0 0% 98%;
+            --card: 0 0% 3.9%;
+            --card-foreground: 0 0% 98%;
+            --popover: 0 0% 3.9%;
+            --popover-foreground: 0 0% 98%;
+            --primary: 0 0% 98%;
+            --primary-foreground: 0 0% 9%;
+            --secondary: 0 0% 14.9%;
+            --secondary-foreground: 0 0% 98%;
+            --muted: 0 0% 14.9%;
+            --muted-foreground: 0 0% 63.9%;
+            --accent: 0 0% 14.9%;
+            --accent-foreground: 0 0% 98%;
+            --destructive: 0 62.8% 30.6%;
+            --destructive-foreground: 0 0% 98%;
+            --border: 0 0% 14.9%;
+            --input: 0 0% 14.9%;
+            --ring: 0 0% 83.1%;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-chess"></i> Controle de Pontuação - Xadrez</h1>
+<body class="min-h-screen bg-background font-sans antialiased">
+    <div class="container mx-auto max-w-7xl px-4 py-8">
+        <!-- Header with shadcn/ui styling -->
+        <header class="text-center mb-8">
+            <div class="flex items-center justify-center gap-3 mb-2">
+                <div class="p-3 rounded-lg bg-primary text-primary-foreground">
+                    <i data-lucide="chess-knight" class="w-8 h-8"></i>
+                </div>
+                <h1 class="text-4xl font-bold tracking-tight text-foreground">Controle de Pontuação</h1>
+            </div>
+            <p class="text-muted-foreground text-lg">Sistema de gerenciamento para torneios de xadrez</p>
         </header>
 
-        <nav class="tabs">
-            <div class="tab-buttons">
-                <button class="tab-btn active" data-tab="jogadores">Jogadores</button>
-                <button class="tab-btn" data-tab="ranking">Ranking</button>
-                <button class="tab-btn" data-tab="partidas">Registrar Partida</button>
+        <!-- Navigation with shadcn/ui tabs styling -->
+        <div class="flex items-center justify-between mb-8">
+            <div class="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
+                <button class="tab-btn inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm active" data-tab="jogadores">
+                    <i data-lucide="users" class="w-4 h-4 mr-2"></i>
+                    Jogadores
+                </button>
+                <button class="tab-btn inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-tab="ranking">
+                    <i data-lucide="trophy" class="w-4 h-4 mr-2"></i>
+                    Ranking
+                </button>
+                <button class="tab-btn inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm" data-tab="partidas">
+                    <i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i>
+                    Registrar Partida
+                </button>
             </div>
-            <button class="theme-toggle" id="themeToggle" title="Alternar tema">
-                <i class="fas fa-moon"></i>
+            <button class="theme-toggle inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10" id="themeToggle" title="Alternar tema">
+                <i data-lucide="moon" class="w-4 h-4"></i>
             </button>
-        </nav>
+        </div>
 
         <!-- Seção Jogadores -->
         <section id="jogadores" class="tab-content active">
-            <div class="section-header">
-                <h2>Gerenciar Jogadores</h2>
-                <button class="btn btn-primary" id="addPlayerBtn">
-                    <i class="fas fa-plus"></i> Adicionar Jogador
-                </button>
-            </div>
-
-            <div class="player-form" id="playerForm" style="display: none;">
-                <h3 id="formTitle">Adicionar Novo Jogador</h3>
-                <form id="playerFormElement">
-                    <div class="form-group">
-                        <label for="playerName">Nome do Jogador:</label>
-                        <input type="text" id="playerName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="playerEmail">Email (opcional):</label>
-                        <input type="email" id="playerEmail">
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-save"></i> Salvar
-                        </button>
-                        <button type="button" class="btn btn-secondary" id="cancelBtn">
-                            <i class="fas fa-times"></i> Cancelar
+            <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-semibold leading-none tracking-tight">Gerenciar Jogadores</h2>
+                            <p class="text-sm text-muted-foreground mt-1">Adicione e gerencie os jogadores do torneio</p>
+                        </div>
+                        <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2" id="addPlayerBtn">
+                            <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                            Adicionar Jogador
                         </button>
                     </div>
-                </form>
-            </div>
-
-            <div class="players-list">
-                <div class="search-box">
-                    <input type="text" id="searchPlayer" placeholder="Buscar jogador...">
-                    <i class="fas fa-search"></i>
                 </div>
-                <div id="playersContainer">
-                    <!-- Jogadores serão inseridos aqui dinamicamente -->
+
+                <div class="p-6 pt-0">
+                    <!-- Player Form Card -->
+                    <div class="rounded-lg border bg-card text-card-foreground shadow-sm mb-6 hidden" id="playerForm">
+                        <div class="flex flex-col space-y-1.5 p-6">
+                            <h3 class="text-lg font-semibold leading-none tracking-tight" id="formTitle">Adicionar Novo Jogador</h3>
+                        </div>
+                        <div class="p-6 pt-0">
+                            <form id="playerFormElement" class="space-y-4">
+                                <div class="space-y-2">
+                                    <label for="playerName" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Nome do Jogador</label>
+                                    <input type="text" id="playerName" required class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="Digite o nome do jogador">
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="playerEmail" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Email (opcional)</label>
+                                    <input type="email" id="playerEmail" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="email@exemplo.com">
+                                </div>
+                                <div class="flex gap-2">
+                                    <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                                        <i data-lucide="save" class="w-4 h-4 mr-2"></i>
+                                        Salvar
+                                    </button>
+                                    <button type="button" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2" id="cancelBtn">
+                                        <i data-lucide="x" class="w-4 h-4 mr-2"></i>
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Search Box -->
+                    <div class="relative mb-6">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"></i>
+                        <input type="text" id="searchPlayer" placeholder="Buscar jogador..." class="flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                    </div>
+
+                    <!-- Players Container -->
+                    <div id="playersContainer" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        <!-- Jogadores serão inseridos aqui dinamicamente -->
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Seção Ranking -->
         <section id="ranking" class="tab-content">
-            <div class="section-header">
-                <h2>Ranking de Jogadores</h2>
-                <div class="ranking-info">
-                    <span class="info-item">Vitória: 3 pts</span>
-                    <span class="info-item">Empate: 1 pt</span>
-                    <span class="info-item">Derrota: 0 pts</span>
+            <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-semibold leading-none tracking-tight">Ranking de Jogadores</h2>
+                            <p class="text-sm text-muted-foreground mt-1">Classificação baseada no desempenho nas partidas</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80">
+                                <i data-lucide="trophy" class="w-3 h-3 mr-1"></i>
+                                Vitória: 3 pts
+                            </div>
+                            <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
+                                <i data-lucide="equal" class="w-3 h-3 mr-1"></i>
+                                Empate: 1 pt
+                            </div>
+                            <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-muted text-muted-foreground">
+                                <i data-lucide="x" class="w-3 h-3 mr-1"></i>
+                                Derrota: 0 pts
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div id="rankingContainer">
-                <!-- Ranking será inserido aqui dinamicamente -->
+                <div class="p-6 pt-0">
+                    <div id="rankingContainer">
+                        <!-- Ranking será inserido aqui dinamicamente -->
+                    </div>
+                </div>
             </div>
         </section>
 
         <!-- Seção Registrar Partida -->
         <section id="partidas" class="tab-content">
-            <div class="section-header">
-                <h2>Registrar Nova Partida</h2>
-            </div>
-            <div class="match-form">
-                <form id="matchForm">
-                    <div class="players-selection">
-                        <div class="form-group">
-                            <label for="player1">Jogador 1:</label>
-                            <select id="player1" required>
-                                <option value="">Selecione um jogador</option>
-                            </select>
+            <div class="grid gap-6 lg:grid-cols-2">
+                <!-- Formulário de Nova Partida -->
+                <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                    <div class="flex flex-col space-y-1.5 p-6">
+                        <h2 class="text-2xl font-semibold leading-none tracking-tight">Registrar Nova Partida</h2>
+                        <p class="text-sm text-muted-foreground">Registre o resultado de uma partida entre dois jogadores</p>
+                    </div>
+                    <div class="p-6 pt-0">
+                        <form id="matchForm" class="space-y-6">
+                            <!-- Seleção de Jogadores -->
+                            <div class="grid gap-4 md:grid-cols-3 items-end">
+                                <div class="space-y-2">
+                                    <label for="player1" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Jogador 1</label>
+                                    <select id="player1" required class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                                        <option value="">Selecione um jogador</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-center">
+                                    <div class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground">
+                                        <i data-lucide="swords" class="w-3 h-3 mr-1"></i>
+                                        VS
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="player2" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Jogador 2</label>
+                                    <select id="player2" required class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                                        <option value="">Selecione um jogador</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Resultado da Partida -->
+                            <div class="space-y-3">
+                                <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Resultado da Partida</label>
+                                <div class="grid gap-2 md:grid-cols-3">
+                                    <label class="flex items-center space-x-2 rounded-md border border-input p-3 cursor-pointer hover:bg-accent hover:text-accent-foreground has-[:checked]:bg-primary has-[:checked]:text-primary-foreground">
+                                        <input type="radio" name="result" value="player1" required class="sr-only">
+                                        <i data-lucide="crown" class="w-4 h-4"></i>
+                                        <span class="text-sm font-medium">Vitória Jogador 1</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 rounded-md border border-input p-3 cursor-pointer hover:bg-accent hover:text-accent-foreground has-[:checked]:bg-primary has-[:checked]:text-primary-foreground">
+                                        <input type="radio" name="result" value="draw" required class="sr-only">
+                                        <i data-lucide="equal" class="w-4 h-4"></i>
+                                        <span class="text-sm font-medium">Empate</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 rounded-md border border-input p-3 cursor-pointer hover:bg-accent hover:text-accent-foreground has-[:checked]:bg-primary has-[:checked]:text-primary-foreground">
+                                        <input type="radio" name="result" value="player2" required class="sr-only">
+                                        <i data-lucide="crown" class="w-4 h-4"></i>
+                                        <span class="text-sm font-medium">Vitória Jogador 2</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label for="matchDate" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Data da Partida</label>
+                                <input type="date" id="matchDate" required class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                            </div>
+
+                            <div class="space-y-2">
+                                <label for="matchNotes" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Observações (opcional)</label>
+                                <textarea id="matchNotes" rows="3" placeholder="Adicione observações sobre a partida..." class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"></textarea>
+                            </div>
+
+                            <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8 w-full">
+                                <i data-lucide="chess-knight" class="w-4 h-4 mr-2"></i>
+                                Registrar Partida
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Partidas Recentes -->
+                <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                    <div class="flex flex-col space-y-1.5 p-6">
+                        <h3 class="text-lg font-semibold leading-none tracking-tight">Partidas Recentes</h3>
+                        <p class="text-sm text-muted-foreground">Histórico das últimas partidas registradas</p>
+                    </div>
+                    <div class="p-6 pt-0">
+                        <div id="recentMatchesContainer" class="space-y-3">
+                            <!-- Partidas recentes serão inseridas aqui -->
                         </div>
-                        <div class="vs-divider">VS</div>
-                        <div class="form-group">
-                            <label for="player2">Jogador 2:</label>
-                            <select id="player2" required>
-                                <option value="">Selecione um jogador</option>
-                            </select>
-                        </div>
                     </div>
-                    
-                    <div class="result-selection">
-                        <h3>Resultado da Partida:</h3>
-                        <div class="result-options">
-                            <label class="result-option">
-                                <input type="radio" name="result" value="player1" required>
-                                <span class="result-text">Vitória Jogador 1</span>
-                            </label>
-                            <label class="result-option">
-                                <input type="radio" name="result" value="draw" required>
-                                <span class="result-text">Empate</span>
-                            </label>
-                            <label class="result-option">
-                                <input type="radio" name="result" value="player2" required>
-                                <span class="result-text">Vitória Jogador 2</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="matchDate">Data da Partida:</label>
-                        <input type="date" id="matchDate" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="matchNotes">Observações (opcional):</label>
-                        <textarea id="matchNotes" rows="3" placeholder="Adicione observações sobre a partida..."></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-large">
-                        <i class="fas fa-chess-board"></i> Registrar Partida
-                    </button>
-                </form>
-            </div>
-
-            <div class="recent-matches">
-                <h3>Partidas Recentes</h3>
-                <div id="recentMatchesContainer">
-                    <!-- Partidas recentes serão inseridas aqui -->
                 </div>
             </div>
         </section>
     </div>
 
     <!-- Modal de Confirmação -->
-    <div id="confirmModal" class="modal">
-        <div class="modal-content">
-            <h3>Confirmar Ação</h3>
-            <p id="confirmMessage"></p>
-            <div class="modal-actions">
-                <button class="btn btn-danger" id="confirmYes">Sim</button>
-                <button class="btn btn-secondary" id="confirmNo">Cancelar</button>
+    <div id="confirmModal" class="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 hidden">
+        <div class="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg">
+            <div class="flex flex-col space-y-1.5 text-center sm:text-left">
+                <h3 class="text-lg font-semibold leading-none tracking-tight">Confirmar Ação</h3>
+                <p id="confirmMessage" class="text-sm text-muted-foreground"></p>
+            </div>
+            <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+                <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 mt-2 sm:mt-0" id="confirmNo">
+                    <i data-lucide="x" class="w-4 h-4 mr-2"></i>
+                    Cancelar
+                </button>
+                <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-10 px-4 py-2" id="confirmYes">
+                    <i data-lucide="check" class="w-4 h-4 mr-2"></i>
+                    Confirmar
+                </button>
             </div>
         </div>
     </div>
 
     <script src="script.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Configure Tailwind for dark mode
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'hsl(var(--border))',
+                        input: 'hsl(var(--input))',
+                        ring: 'hsl(var(--ring))',
+                        background: 'hsl(var(--background))',
+                        foreground: 'hsl(var(--foreground))',
+                        primary: {
+                            DEFAULT: 'hsl(var(--primary))',
+                            foreground: 'hsl(var(--primary-foreground))'
+                        },
+                        secondary: {
+                            DEFAULT: 'hsl(var(--secondary))',
+                            foreground: 'hsl(var(--secondary-foreground))'
+                        },
+                        destructive: {
+                            DEFAULT: 'hsl(var(--destructive))',
+                            foreground: 'hsl(var(--destructive-foreground))'
+                        },
+                        muted: {
+                            DEFAULT: 'hsl(var(--muted))',
+                            foreground: 'hsl(var(--muted-foreground))'
+                        },
+                        accent: {
+                            DEFAULT: 'hsl(var(--accent))',
+                            foreground: 'hsl(var(--accent-foreground))'
+                        },
+                        popover: {
+                            DEFAULT: 'hsl(var(--popover))',
+                            foreground: 'hsl(var(--popover-foreground))'
+                        },
+                        card: {
+                            DEFAULT: 'hsl(var(--card))',
+                            foreground: 'hsl(var(--card-foreground))'
+                        }
+                    },
+                    borderRadius: {
+                        lg: 'var(--radius)',
+                        md: 'calc(var(--radius) - 2px)',
+                        sm: 'calc(var(--radius) - 4px)'
+                    }
+                }
+            }
+        };
+    </script>
 </body>
 </html>
